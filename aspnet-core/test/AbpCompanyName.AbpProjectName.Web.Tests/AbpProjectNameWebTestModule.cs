@@ -10,25 +10,24 @@ namespace AbpCompanyName.AbpProjectName.Web.Tests
 {
     [DependsOn(
         typeof(AbpProjectNameWebMvcModule),
-        typeof(AbpAspNetCoreTestBaseModule)
-    )]
+        typeof(AbpAspNetCoreTestBaseModule))]
     public class AbpProjectNameWebTestModule : AbpModule
     {
         public AbpProjectNameWebTestModule(AbpProjectNameEntityFrameworkModule abpProjectNameEntityFrameworkModule)
         {
             abpProjectNameEntityFrameworkModule.SkipDbContextRegistration = true;
-        } 
-        
+        }
+
         public override void PreInitialize()
         {
-            Configuration.UnitOfWork.IsTransactional = false; //EF Core InMemory DB does not support transactions.
+            Configuration.UnitOfWork.IsTransactional = false; // EF Core InMemory DB does not support transactions.
         }
 
         public override void Initialize()
         {
             IocManager.RegisterAssemblyByConvention(typeof(AbpProjectNameWebTestModule).GetAssembly());
         }
-        
+
         public override void PostInitialize()
         {
             IocManager.Resolve<ApplicationPartManager>()

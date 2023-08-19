@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+#pragma warning disable CA1716
 namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.SideBarMenu
 {
     public static class UserMenuItemExtensions

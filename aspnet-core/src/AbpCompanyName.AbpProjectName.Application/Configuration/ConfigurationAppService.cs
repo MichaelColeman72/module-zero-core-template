@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Runtime.Session;
 using AbpCompanyName.AbpProjectName.Configuration.Dto;
+using System.Threading.Tasks;
 
 namespace AbpCompanyName.AbpProjectName.Configuration
 {
@@ -10,7 +10,7 @@ namespace AbpCompanyName.AbpProjectName.Configuration
     {
         public async Task ChangeUiTheme(ChangeUiThemeInput input)
         {
-            await SettingManager.ChangeSettingForUserAsync(AbpSession.ToUserIdentifier(), AppSettingNames.UiTheme, input.Theme);
+            await SettingManager.ChangeSettingForUserAsync(AbpSession.ToUserIdentifier(), AppSettingNames.UiTheme, input.Theme).ConfigureAwait(false);
         }
     }
 }

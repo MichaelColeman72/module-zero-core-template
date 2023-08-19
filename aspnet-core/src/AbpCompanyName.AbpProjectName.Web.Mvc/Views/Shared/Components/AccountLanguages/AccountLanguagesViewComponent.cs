@@ -1,8 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Abp.Localization;
+﻿using Abp.Localization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
+#pragma warning disable CA1716
 namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.AccountLanguages
 {
     public class AccountLanguagesViewComponent : AbpProjectNameViewComponent

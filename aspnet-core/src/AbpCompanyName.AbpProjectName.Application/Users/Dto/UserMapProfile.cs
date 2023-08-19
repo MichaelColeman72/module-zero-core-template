@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using AbpCompanyName.AbpProjectName.Authorization.Users;
+﻿using AbpCompanyName.AbpProjectName.Authorization.Users;
+using AutoMapper;
 
 namespace AbpCompanyName.AbpProjectName.Users.Dto
 {
@@ -7,13 +7,13 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
     {
         public UserMapProfile()
         {
-            CreateMap<UserDto, User>();
-            CreateMap<UserDto, User>()
+            _ = CreateMap<UserDto, User>();
+            _ = CreateMap<UserDto, User>()
                 .ForMember(x => x.Roles, opt => opt.Ignore())
                 .ForMember(x => x.CreationTime, opt => opt.Ignore());
 
-            CreateMap<CreateUserDto, User>();
-            CreateMap<CreateUserDto, User>().ForMember(x => x.Roles, opt => opt.Ignore());
+            _ = CreateMap<CreateUserDto, User>();
+            _ = CreateMap<CreateUserDto, User>().ForMember(x => x.Roles, opt => opt.Ignore());
         }
     }
 }

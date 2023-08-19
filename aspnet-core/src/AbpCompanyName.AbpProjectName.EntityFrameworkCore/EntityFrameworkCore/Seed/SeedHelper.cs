@@ -1,12 +1,12 @@
-﻿using System;
-using System.Transactions;
-using Microsoft.EntityFrameworkCore;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Uow;
 using Abp.MultiTenancy;
 using AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Host;
 using AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Tenants;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Transactions;
 
 namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed
 {
@@ -32,17 +32,13 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed
         private static void WithDbContext<TDbContext>(IIocResolver iocResolver, Action<TDbContext> contextAction)
             where TDbContext : DbContext
         {
-            using (var uowManager = iocResolver.ResolveAsDisposable<IUnitOfWorkManager>())
-            {
-                using (var uow = uowManager.Object.Begin(TransactionScopeOption.Suppress))
-                {
-                    var context = uowManager.Object.Current.GetDbContext<TDbContext>(MultiTenancySides.Host);
+            using var uowManager = iocResolver.ResolveAsDisposable<IUnitOfWorkManager>();
+            using var uow = uowManager.Object.Begin(TransactionScopeOption.Suppress);
+            var context = uowManager.Object.Current.GetDbContext<TDbContext>(MultiTenancySides.Host);
 
-                    contextAction(context);
+            contextAction(context);
 
-                    uow.Complete();
-                }
-            }
+            uow.Complete();
         }
     }
 }

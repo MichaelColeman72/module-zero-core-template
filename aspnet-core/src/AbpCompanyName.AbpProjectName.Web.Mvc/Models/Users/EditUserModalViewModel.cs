@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using AbpCompanyName.AbpProjectName.Roles.Dto;
 using AbpCompanyName.AbpProjectName.Users.Dto;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AbpCompanyName.AbpProjectName.Web.Models.Users
 {

@@ -1,11 +1,10 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Abp;
 using Abp.Extensions;
 using Abp.Notifications;
 using Abp.Timing;
-using Abp.Web.Security.AntiForgery;
 using AbpCompanyName.AbpProjectName.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace AbpCompanyName.AbpProjectName.Web.Host.Controllers
 {
@@ -25,10 +24,10 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Controllers
 
         /// <summary>
         /// This is a demo code to demonstrate sending notification to default tenant admin and host admin uers.
-        /// Don't use this code in production !!!
+        /// Don't use this code in production !!!.
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="message">A message.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<ActionResult> TestNotification(string message = "")
         {
             if (message.IsNullOrEmpty())
@@ -43,8 +42,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Controllers
                 "App.SimpleMessage",
                 new MessageNotificationData(message),
                 severity: NotificationSeverity.Info,
-                userIds: new[] { defaultTenantAdmin, hostAdmin }
-            );
+                userIds: new[] { defaultTenantAdmin, hostAdmin }).ConfigureAwait(false);
 
             return Content("Sent notification: " + message);
         }

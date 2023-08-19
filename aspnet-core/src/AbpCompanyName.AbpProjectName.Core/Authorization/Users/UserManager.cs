@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Configuration;
 using Abp.Domain.Repositories;
@@ -11,7 +6,11 @@ using Abp.Domain.Uow;
 using Abp.Organizations;
 using Abp.Runtime.Caching;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
-using Abp.Authorization.Roles;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
 {
@@ -34,7 +33,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
           IRepository<OrganizationUnit, long> organizationUnitRepository,
           IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
           IOrganizationUnitSettings organizationUnitSettings,
-          ISettingManager settingManager, 
+          ISettingManager settingManager,
           IRepository<UserLogin, long> userLoginRepository)
           : base(
               roleManager,

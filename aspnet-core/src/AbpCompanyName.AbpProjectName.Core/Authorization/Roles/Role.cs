@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Abp.Authorization.Roles;
+﻿using Abp.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
+using System.ComponentModel.DataAnnotations;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Roles
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1501:Avoid excessive inheritance", Justification = "By design")]
     public class Role : AbpRole<User>
     {
         public const int MaxDescriptionLength = 5000;
@@ -23,6 +24,6 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles
         }
 
         [StringLength(MaxDescriptionLength)]
-        public string Description {get; set;}
+        public string Description { get; set; }
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Text;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
 
 namespace AbpCompanyName.AbpProjectName.Web.Startup
 {
@@ -12,11 +12,11 @@ namespace AbpCompanyName.AbpProjectName.Web.Startup
         {
             if (bool.Parse(configuration["Authentication:JwtBearer:IsEnabled"]))
             {
-                services.AddAuthentication()
+                _ = services.AddAuthentication()
                     .AddJwtBearer(options =>
                     {
                         options.Audience = configuration["Authentication:JwtBearer:Audience"];
-                        
+
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             // The signing key must match!
@@ -38,7 +38,6 @@ namespace AbpCompanyName.AbpProjectName.Web.Startup
                             ClockSkew = TimeSpan.Zero
                         };
                     });
-                
             }
         }
     }

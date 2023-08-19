@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Abp.MultiTenancy;
+﻿using Abp.MultiTenancy;
 using AbpCompanyName.AbpProjectName.Editions;
 using AbpCompanyName.AbpProjectName.MultiTenancy;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Tenants
 {
@@ -23,7 +23,6 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Tenants
         private void CreateDefaultTenant()
         {
             // Default tenant
-
             var defaultTenant = _context.Tenants.IgnoreQueryFilters().FirstOrDefault(t => t.TenancyName == AbpTenantBase.DefaultTenantName);
             if (defaultTenant == null)
             {
@@ -35,8 +34,8 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Tenants
                     defaultTenant.EditionId = defaultEdition.Id;
                 }
 
-                _context.Tenants.Add(defaultTenant);
-                _context.SaveChanges();
+                _ = _context.Tenants.Add(defaultTenant);
+                _ = _context.SaveChanges();
             }
         }
     }

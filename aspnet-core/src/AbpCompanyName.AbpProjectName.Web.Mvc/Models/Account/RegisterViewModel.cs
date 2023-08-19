@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.Extensions;
 using AbpCompanyName.AbpProjectName.Validation;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AbpCompanyName.AbpProjectName.Web.Models.Account
 {
@@ -37,7 +37,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Models.Account
         {
             if (!UserName.IsNullOrEmpty())
             {
-                if (!UserName.Equals(EmailAddress) && ValidationHelper.IsEmail(UserName))
+                if (!UserName.Equals(EmailAddress, System.StringComparison.Ordinal) && ValidationHelper.IsEmail(UserName))
                 {
                     yield return new ValidationResult("Username cannot be an email address unless it's the same as your email address!");
                 }

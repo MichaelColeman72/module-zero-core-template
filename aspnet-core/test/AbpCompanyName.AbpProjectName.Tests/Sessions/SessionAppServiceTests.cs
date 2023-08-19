@@ -1,30 +1,30 @@
-﻿using System.Threading.Tasks;
+﻿using AbpCompanyName.AbpProjectName.Sessions;
 using Shouldly;
+using System.Threading.Tasks;
 using Xunit;
-using AbpCompanyName.AbpProjectName.Sessions;
 
 namespace AbpCompanyName.AbpProjectName.Tests.Sessions
 {
-    public class SessionAppService_Tests : AbpProjectNameTestBase
+    public class SessionAppServiceTests : AbpProjectNameTestBase
     {
         private readonly ISessionAppService _sessionAppService;
 
-        public SessionAppService_Tests()
+        public SessionAppServiceTests()
         {
             _sessionAppService = Resolve<ISessionAppService>();
         }
 
         [MultiTenantFact]
-        public async Task Should_Get_Current_User_When_Logged_In_As_Host()
+        public async Task ShouldGetCurrentUserWhenLoggedInAsHost()
         {
             // Arrange
             LoginAsHostAdmin();
 
             // Act
-            var output = await _sessionAppService.GetCurrentLoginInformations();
+            var output = await _sessionAppService.GetCurrentLoginInformations().ConfigureAwait(false);
 
             // Assert
-            var currentUser = await GetCurrentUserAsync();
+            var currentUser = await GetCurrentUserAsync().ConfigureAwait(false);
             output.User.ShouldNotBe(null);
             output.User.Name.ShouldBe(currentUser.Name);
             output.User.Surname.ShouldBe(currentUser.Surname);
@@ -33,14 +33,14 @@ namespace AbpCompanyName.AbpProjectName.Tests.Sessions
         }
 
         [Fact]
-        public async Task Should_Get_Current_User_And_Tenant_When_Logged_In_As_Tenant()
+        public async Task ShouldGetCurrentUserAndTenantWhenLoggedInAsTenant()
         {
             // Act
-            var output = await _sessionAppService.GetCurrentLoginInformations();
+            var output = await _sessionAppService.GetCurrentLoginInformations().ConfigureAwait(false);
 
             // Assert
-            var currentUser = await GetCurrentUserAsync();
-            var currentTenant = await GetCurrentTenantAsync();
+            var currentUser = await GetCurrentUserAsync().ConfigureAwait(false);
+            var currentTenant = await GetCurrentTenantAsync().ConfigureAwait(false);
 
             output.User.ShouldNotBe(null);
             output.User.Name.ShouldBe(currentUser.Name);

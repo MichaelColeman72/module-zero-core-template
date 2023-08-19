@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using Abp.Extensions;
+﻿using Abp.Extensions;
+using System.Text.RegularExpressions;
 
 namespace AbpCompanyName.AbpProjectName.Validation
 {

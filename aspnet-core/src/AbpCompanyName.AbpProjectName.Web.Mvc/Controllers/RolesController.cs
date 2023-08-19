@@ -1,15 +1,15 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Abp.Application.Services.Dto;
 using Abp.AspNetCore.Mvc.Authorization;
 using AbpCompanyName.AbpProjectName.Authorization;
 using AbpCompanyName.AbpProjectName.Controllers;
 using AbpCompanyName.AbpProjectName.Roles;
 using AbpCompanyName.AbpProjectName.Web.Models.Roles;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace AbpCompanyName.AbpProjectName.Web.Controllers
 {
-    [AbpMvcAuthorize(PermissionNames.Pages_Roles)]
+    [AbpMvcAuthorize(PermissionNames.PagesRoles)]
     public class RolesController : AbpProjectNameControllerBase
     {
         private readonly IRoleAppService _roleAppService;
@@ -19,9 +19,10 @@ namespace AbpCompanyName.AbpProjectName.Web.Controllers
             _roleAppService = roleAppService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var permissions = (await _roleAppService.GetAllPermissions()).Items;
+            var permissions = (await _roleAppService.GetAllPermissions().ConfigureAwait(false)).Items;
             var model = new RoleListViewModel
             {
                 Permissions = permissions
@@ -30,9 +31,10 @@ namespace AbpCompanyName.AbpProjectName.Web.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public async Task<ActionResult> EditModal(int roleId)
         {
-            var output = await _roleAppService.GetRoleForEdit(new EntityDto(roleId));
+            var output = await _roleAppService.GetRoleForEdit(new EntityDto(roleId)).ConfigureAwait(false);
             var model = ObjectMapper.Map<EditRoleModalViewModel>(output);
 
             return PartialView("_EditModal", model);

@@ -1,24 +1,23 @@
-using System;
-using Castle.MicroKernel.Registration;
-using NSubstitute;
-using Abp.AutoMapper;
+﻿using Abp.AutoMapper;
+using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Modules;
-using Abp.Configuration.Startup;
 using Abp.Net.Mail;
 using Abp.TestBase;
 using Abp.Zero.Configuration;
 using Abp.Zero.EntityFrameworkCore;
 using AbpCompanyName.AbpProjectName.EntityFrameworkCore;
 using AbpCompanyName.AbpProjectName.Tests.DependencyInjection;
+using Castle.MicroKernel.Registration;
+using NSubstitute;
+using System;
 
 namespace AbpCompanyName.AbpProjectName.Tests
 {
     [DependsOn(
         typeof(AbpProjectNameApplicationModule),
         typeof(AbpProjectNameEntityFrameworkModule),
-        typeof(AbpTestBaseModule)
-        )]
+        typeof(AbpTestBaseModule))]
     public class AbpProjectNameTestModule : AbpModule
     {
         public AbpProjectNameTestModule(AbpProjectNameEntityFrameworkModule abpProjectNameEntityFrameworkModule)
@@ -33,7 +32,9 @@ namespace AbpCompanyName.AbpProjectName.Tests
             Configuration.UnitOfWork.IsTransactional = false;
 
             // Disable static mapper usage since it breaks unit tests (see https://github.com/aspnetboilerplate/aspnetboilerplate/issues/2052)
+#pragma warning disable CS0618 // Type or member is obsolete
             Configuration.Modules.AbpAutoMapper().UseStaticMapper = false;
+#pragma warning restore CS0618 // Type or member is obsolete
 
             Configuration.BackgroundJobs.IsJobExecutionEnabled = false;
 
@@ -50,13 +51,13 @@ namespace AbpCompanyName.AbpProjectName.Tests
             ServiceCollectionRegistrar.Register(IocManager);
         }
 
-        private void RegisterFakeService<TService>() where TService : class
+        private void RegisterFakeService<TService>()
+            where TService : class
         {
-            IocManager.IocContainer.Register(
+            _ = IocManager.IocContainer.Register(
                 Component.For<TService>()
                     .UsingFactoryMethod(() => Substitute.For<TService>())
-                    .LifestyleSingleton()
-            );
+                    .LifestyleSingleton());
         }
     }
 }

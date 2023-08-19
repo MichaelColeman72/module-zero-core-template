@@ -9,6 +9,7 @@ namespace AbpCompanyName.AbpProjectName.Sessions.Dto
 
         public DateTime ReleaseDate { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "By design")]
         public Dictionary<string, bool> Features { get; set; }
     }
 }

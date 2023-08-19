@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Castle.Windsor.MsDependencyInjection;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using AbpCompanyName.AbpProjectName.Identity;
+using Castle.Windsor.MsDependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AbpCompanyName.AbpProjectName.Migrator.DependencyInjection
 {
@@ -11,9 +11,9 @@ namespace AbpCompanyName.AbpProjectName.Migrator.DependencyInjection
         {
             var services = new ServiceCollection();
 
-            IdentityRegistrar.Register(services);
+            _ = IdentityRegistrar.Register(services);
 
-            WindsorRegistrationHelper.CreateServiceProvider(iocManager.IocContainer, services);
+            _ = WindsorRegistrationHelper.CreateServiceProvider(iocManager.IocContainer, services);
         }
     }
 }

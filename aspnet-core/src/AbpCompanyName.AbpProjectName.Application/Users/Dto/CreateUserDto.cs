@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
 using Abp.Runtime.Validation;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
+using System.ComponentModel.DataAnnotations;
 
 namespace AbpCompanyName.AbpProjectName.Users.Dto
 {
@@ -29,6 +29,7 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
 
         public bool IsActive { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "By design")]
         public string[] RoleNames { get; set; }
 
         [Required]
@@ -38,10 +39,7 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
 
         public void Normalize()
         {
-            if (RoleNames == null)
-            {
-                RoleNames = new string[0];
-            }
+            RoleNames ??= System.Array.Empty<string>();
         }
     }
 }

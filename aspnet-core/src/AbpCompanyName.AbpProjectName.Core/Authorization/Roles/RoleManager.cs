@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using Abp.Authorization;
 using Abp.Authorization.Roles;
 using Abp.Domain.Repositories;
@@ -9,6 +6,9 @@ using Abp.Organizations;
 using Abp.Runtime.Caching;
 using Abp.Zero.Configuration;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Roles
 {
@@ -30,13 +30,14 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles
                   store,
                   roleValidators,
                   keyNormalizer,
-                  errors, logger,
+                  errors,
+                  logger,
                   permissionManager,
                   cacheManager,
                   unitOfWorkManager,
                   roleManagementConfig,
-                organizationUnitRepository,
-                organizationUnitRoleRepository)
+                  organizationUnitRepository,
+                  organizationUnitRoleRepository)
         {
         }
     }

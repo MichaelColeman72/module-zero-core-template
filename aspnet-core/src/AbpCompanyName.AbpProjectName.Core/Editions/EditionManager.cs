@@ -12,7 +12,7 @@ namespace AbpCompanyName.AbpProjectName.Editions
         public EditionManager(
             IRepository<Edition> editionRepository,
             IAbpZeroFeatureValueStore featureValueStore,
-            IUnitOfWorkManager unitOfWorkManager) 
+            IUnitOfWorkManager unitOfWorkManager)
             : base(editionRepository, featureValueStore, unitOfWorkManager)
         {
         }

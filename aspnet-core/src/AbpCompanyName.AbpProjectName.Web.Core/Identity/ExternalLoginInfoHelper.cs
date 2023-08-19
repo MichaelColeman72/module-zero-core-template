@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Abp.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Abp.Extensions;
 
 namespace AbpCompanyName.AbpProjectName.Identity
 {
-    public class ExternalLoginInfoHelper
+    public static class ExternalLoginInfoHelper
     {
-        public static (string name, string surname) GetNameAndSurnameFromClaims(List<Claim> claims)
+        public static (string name, string surname) GetNameAndSurnameFromClaims(IReadOnlyList<Claim> claims)
         {
             string name = null;
             string surname = null;

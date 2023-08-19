@@ -1,11 +1,13 @@
-﻿using System;
-using Abp;
+﻿using Abp;
 using Abp.Authorization;
 using Abp.Dependency;
 using Abp.UI;
+using System;
+using System.Globalization;
 
 namespace AbpCompanyName.AbpProjectName.Authorization
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:Specify CultureInfo", Justification = "By design")]
     public class AbpLoginResultTypeHelper : AbpServiceBase, ITransientDependency
     {
         public AbpLoginResultTypeHelper()

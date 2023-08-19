@@ -6,12 +6,9 @@ namespace AbpCompanyName.AbpProjectName.Web.Views
 {
     public abstract class AbpProjectNameRazorPage<TModel> : AbpRazorPage<TModel>
     {
+        protected AbpProjectNameRazorPage() => LocalizationSourceName = AbpProjectNameConsts.LocalizationSourceName;
+
         [RazorInject]
         public IAbpSession AbpSession { get; set; }
-
-        protected AbpProjectNameRazorPage()
-        {
-            LocalizationSourceName = AbpProjectNameConsts.LocalizationSourceName;
-        }
     }
 }

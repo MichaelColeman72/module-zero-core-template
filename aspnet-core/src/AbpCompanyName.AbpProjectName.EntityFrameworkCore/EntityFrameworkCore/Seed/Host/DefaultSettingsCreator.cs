@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Abp.Configuration;
+﻿using Abp.Configuration;
 using Abp.Localization;
 using Abp.MultiTenancy;
 using Abp.Net.Mail;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Host
 {
@@ -16,14 +16,10 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Host
             _context = context;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "By design.")]
         public void Create()
         {
-            int? tenantId = null;
-
-            if (AbpProjectNameConsts.MultiTenancyEnabled == false)
-            {
-                tenantId = MultiTenancyConsts.DefaultTenantId;
-            }
+            int? tenantId = AbpProjectNameConsts.MultiTenancyEnabled ? null : MultiTenancyConsts.DefaultTenantId;
 
             // Emailing
             AddSettingIfNotExists(EmailSettingNames.DefaultFromAddress, "admin@mydomain.com", tenantId);
@@ -40,8 +36,8 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Host
                 return;
             }
 
-            _context.Settings.Add(new Setting(tenantId, null, name, value));
-            _context.SaveChanges();
+            _ = _context.Settings.Add(new Setting(tenantId, null, name, value));
+            _ = _context.SaveChanges();
         }
     }
 }

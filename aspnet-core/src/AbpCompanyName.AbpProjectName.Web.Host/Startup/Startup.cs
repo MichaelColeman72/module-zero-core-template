@@ -1,28 +1,29 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using Abp.AspNetCore;
+using Abp.AspNetCore.Mvc.Antiforgery;
+using Abp.AspNetCore.SignalR.Hubs;
+using Abp.Castle.Logging.Log4Net;
+using Abp.Dependency;
+using Abp.Extensions;
+using Abp.Json;
+using AbpCompanyName.AbpProjectName.Configuration;
+using AbpCompanyName.AbpProjectName.Identity;
+using Castle.Facilities.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Castle.Facilities.Logging;
-using Abp.AspNetCore;
-using Abp.AspNetCore.Mvc.Antiforgery;
-using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
-using AbpCompanyName.AbpProjectName.Configuration;
-using AbpCompanyName.AbpProjectName.Identity;
-using Abp.AspNetCore.SignalR.Hubs;
-using Abp.Dependency;
-using Abp.Json;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1724: Type names should not match namespaces", Justification = "By design")]
     public class Startup
     {
         private const string _defaultCorsPolicyName = "localhost";
@@ -38,12 +39,13 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
             _appConfiguration = env.GetAppConfiguration();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506: Avoid excessive class coupling", Justification = "By design")]
         public void ConfigureServices(IServiceCollection services)
         {
-            //MVC
-            services.AddControllersWithViews(
-                options => { options.Filters.Add(new AbpAutoValidateAntiforgeryTokenAttribute()); }
-            ).AddNewtonsoftJson(options =>
+            // MVC
+            _ = services.AddControllersWithViews(
+                options => { options.Filters.Add(new AbpAutoValidateAntiforgeryTokenAttribute()); })
+            .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new AbpMvcContractResolver(IocManager.Instance)
                 {
@@ -51,89 +53,83 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
                 };
             });
 
-            IdentityRegistrar.Register(services);
+            _ = IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
 
-            services.AddSignalR();
+            _ = services.AddSignalR();
 
             // Configure CORS for angular2 UI
-            services.AddCors(
+            // App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
+            _ = services.AddCors(
                 options => options.AddPolicy(
                     _defaultCorsPolicyName,
                     builder => builder
                         .WithOrigins(
-                            // App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
                             _appConfiguration["App:CorsOrigins"]
                                 .Split(",", StringSplitOptions.RemoveEmptyEntries)
                                 .Select(o => o.RemovePostFix("/"))
-                                .ToArray()
-                        )
+                                .ToArray())
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowCredentials()
-                )
-            );
+                        .AllowCredentials()));
 
             // Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             ConfigureSwagger(services);
 
             // Configure Abp and Dependency Injection
+            // Configure Log4Net logging
             services.AddAbpWithoutCreatingServiceProvider<AbpProjectNameWebHostModule>(
-                // Configure Log4Net logging
                 options => options.IocManager.IocContainer.AddFacility<LoggingFacility>(
-                    f => f.UseAbpLog4Net().WithConfig(_hostingEnvironment.IsDevelopment()
+                    f => f.UseAbpLog4Net().WithConfig(
+                        _hostingEnvironment.IsDevelopment()
                         ? "log4net.config"
-                        : "log4net.Production.config"
-                    )
-                )
-            );
+                        : "log4net.Production.config")));
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "By design")]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
-            app.UseCors(_defaultCorsPolicyName); // Enable CORS!
-
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
+            _ = app.UseCors(_defaultCorsPolicyName); // Enable CORS!
+            _ = app.UseStaticFiles();
+            _ = app.UseRouting();
+            _ = app.UseAuthentication();
+            _ = app.UseAuthorization();
 
             app.UseAbpRequestLocalization();
-            
-            app.UseEndpoints(endpoints =>
+
+            _ = app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<AbpCommonHub>("/signalr");
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
+                _ = endpoints.MapHub<AbpCommonHub>("/signalr");
+                _ = endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                _ = endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
             });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
-            app.UseSwagger(c => { c.RouteTemplate = "swagger/{documentName}/swagger.json"; });
+            _ = app.UseSwagger(c => { c.RouteTemplate = "swagger/{documentName}/swagger.json"; });
 
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
-            app.UseSwaggerUI(options =>
+            _ = app.UseSwaggerUI(options =>
             {
                 // specifying the Swagger JSON endpoint.
                 options.SwaggerEndpoint($"/swagger/{_apiVersion}/swagger.json", $"AbpProjectName API {_apiVersion}");
                 options.IndexStream = () => Assembly.GetExecutingAssembly()
                     .GetManifestResourceStream("AbpCompanyName.AbpProjectName.Web.Host.wwwroot.swagger.ui.index.html");
-                options.DisplayRequestDuration(); // Controls the display of the request duration (in milliseconds) for "Try it out" requests.  
+                options.DisplayRequestDuration(); // Controls the display of the request duration (in milliseconds) for "Try it out" requests.
             }); // URL: /swagger
         }
-        
+
         private void ConfigureSwagger(IServiceCollection services)
         {
-            services.AddSwaggerGen(options =>
+            _ = services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc(_apiVersion, new OpenApiInfo
                 {
                     Version = _apiVersion,
                     Title = "AbpProjectName API",
                     Description = "AbpProjectName",
+
                     // uncomment if needed TermsOfService = new Uri("https://example.com/terms"),
                     Contact = new OpenApiContact
                     {
@@ -159,8 +155,8 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
                     Type = SecuritySchemeType.ApiKey
                 });
 
-                //add summaries to swagger
-                bool canShowSummaries = _appConfiguration.GetValue<bool>("Swagger:ShowSummaries");
+                // add summaries to swagger
+                var canShowSummaries = _appConfiguration.GetValue<bool>("Swagger:ShowSummaries");
                 if (canShowSummaries)
                 {
                     var hostXmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

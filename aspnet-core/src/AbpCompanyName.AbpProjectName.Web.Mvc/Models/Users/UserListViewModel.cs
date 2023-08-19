@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using AbpCompanyName.AbpProjectName.Roles.Dto;
+using System.Collections.Generic;
 
 namespace AbpCompanyName.AbpProjectName.Web.Models.Users
 {

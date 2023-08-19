@@ -30,5 +30,13 @@
   <ItemGroup>
     <ProjectReference Include="..\AbpCompanyName.AbpProjectName.Core\AbpCompanyName.AbpProjectName.Core.csproj" />
   </ItemGroup>
+   
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\_src\GitHub\module-zero-core-template\aspnet-core\src\AbpCompanyName.AbpProjectName.EntityFrameworkCore\Migrations\.editorconfig" />
+  </ItemGroup>
+   
+  <ItemGroup>
+    <None Include="C:\_src\GitHub\module-zero-core-template\aspnet-core\src\AbpCompanyName.AbpProjectName.EntityFrameworkCore\Migrations\.editorconfig" />
+  </ItemGroup>
   
 </Project>

@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Abp.Collections.Extensions;
 using Abp.Extensions;
 using Abp.Timing;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace AbpCompanyName.AbpProjectName.Web.Resources
 {
@@ -22,7 +22,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Resources
 
         public void AddScript(string url, bool addMinifiedOnProd = true)
         {
-            _scriptUrls.AddIfNotContains(NormalizeUrl(url, "js"));
+            _ = _scriptUrls.AddIfNotContains(NormalizeUrl(url, "js"));
         }
 
         public IReadOnlyList<string> GetScripts()
@@ -36,24 +36,19 @@ namespace AbpCompanyName.AbpProjectName.Web.Resources
             {
                 foreach (var scriptUrl in _scriptUrls)
                 {
-                    await writer.WriteAsync($"<script src=\"{scriptUrl}?v=" + Clock.Now.Ticks + "\"></script>");
+                    await writer.WriteAsync($"<script src=\"{scriptUrl}?v=" + Clock.Now.Ticks + "\"></script>").ConfigureAwait(false);
                 }
             });
         }
 
+        public void AddScript(System.Uri url, bool addMinifiedOnProd = true)
+        {
+            throw new System.NotImplementedException();
+        }
+
         private string NormalizeUrl(string url, string ext)
         {
-            if (_environment.IsDevelopment())
-            {
-                return url;
-            }
-
-            if (url.EndsWith(".min." + ext))
-            {
-                return url;
-            }
-
-            return url.Left(url.Length - ext.Length) + "min." + ext;
+            return _environment.IsDevelopment() ? url : url.EndsWith($".min.{ext}", System.StringComparison.OrdinalIgnoreCase) ? url : url.Left(url.Length - ext.Length) + $"min.{ext}";
         }
     }
 }

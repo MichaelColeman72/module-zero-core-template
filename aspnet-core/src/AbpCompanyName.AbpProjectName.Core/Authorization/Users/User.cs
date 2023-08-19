@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Extensions;
+using System;
+using System.Collections.Generic;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1501:Avoid excessive inheritance", Justification = "By design")]
     public class User : AbpUser<User>
     {
         public const string DefaultPassword = "123qwe";

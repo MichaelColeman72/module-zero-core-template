@@ -10,13 +10,11 @@ namespace AbpCompanyName.AbpProjectName.Localization
         public static void Configure(ILocalizationConfiguration localizationConfiguration)
         {
             localizationConfiguration.Sources.Add(
-                new DictionaryBasedLocalizationSource(AbpProjectNameConsts.LocalizationSourceName,
+                new DictionaryBasedLocalizationSource(
+                    AbpProjectNameConsts.LocalizationSourceName,
                     new XmlEmbeddedFileLocalizationDictionaryProvider(
                         typeof(AbpProjectNameLocalizationConfigurer).GetAssembly(),
-                        "AbpCompanyName.AbpProjectName.Localization.SourceFiles"
-                    )
-                )
-            );
+                        "AbpCompanyName.AbpProjectName.Localization.SourceFiles")));
         }
     }
 }

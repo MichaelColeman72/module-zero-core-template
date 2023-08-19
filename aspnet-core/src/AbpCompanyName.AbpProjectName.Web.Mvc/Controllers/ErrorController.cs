@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Abp.AspNetCore.Mvc.Controllers;
+﻿using Abp.AspNetCore.Mvc.Controllers;
 using Abp.Web.Models;
 using Abp.Web.Mvc.Models;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace AbpCompanyName.AbpProjectName.Web.Controllers
 {
@@ -16,6 +16,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Controllers
             _errorInfoBuilder = errorInfoBuilder;
         }
 
+        [HttpGet]
         public ActionResult Index()
         {
             var exHandlerFeature = HttpContext.Features.Get<IExceptionHandlerFeature>();
@@ -28,9 +29,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Controllers
                 "Error",
                 new ErrorViewModel(
                     _errorInfoBuilder.BuildForException(exception),
-                    exception
-                )
-            );
+                    exception));
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
-using Abp.Configuration.Startup;
+﻿using Abp.Configuration.Startup;
 using AbpCompanyName.AbpProjectName.Sessions;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
+#pragma warning disable CA1716
 namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.RightNavbarUserArea
 {
     public class RightNavbarUserAreaViewComponent : AbpProjectNameViewComponent
@@ -22,7 +23,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.RightNavbarU
         {
             var model = new RightNavbarUserAreaViewModel
             {
-                LoginInformations = await _sessionAppService.GetCurrentLoginInformations(),
+                LoginInformations = await _sessionAppService.GetCurrentLoginInformations().ConfigureAwait(false),
                 IsMultiTenancyEnabled = _multiTenancyConfig.IsEnabled,
             };
 
@@ -30,4 +31,3 @@ namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.RightNavbarU
         }
     }
 }
-

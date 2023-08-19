@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using AbpCompanyName.AbpProjectName.Authorization;
+﻿using AbpCompanyName.AbpProjectName.Authorization;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
 using AbpCompanyName.AbpProjectName.Editions;
 using AbpCompanyName.AbpProjectName.MultiTenancy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AbpCompanyName.AbpProjectName.Identity
 {
@@ -12,7 +12,7 @@ namespace AbpCompanyName.AbpProjectName.Identity
     {
         public static IdentityBuilder Register(IServiceCollection services)
         {
-            services.AddLogging();
+            _ = services.AddLogging();
 
             return services.AddAbpIdentity<Tenant, User, Role>()
                 .AddAbpTenantManager<TenantManager>()

@@ -7,4 +7,3 @@ namespace AbpCompanyName.AbpProjectName.MultiTenancy
     {
     }
 }
-

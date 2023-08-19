@@ -1,7 +1,6 @@
 using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Linq;
 using Abp.Organizations;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 
@@ -19,19 +18,18 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             IRepository<UserPermissionSetting, long> userPermissionSettingRepository,
             IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
             IRepository<OrganizationUnitRole, long> organizationUnitRoleRepository,
-            IRepository<UserToken, long> userTokenRepository
-        ) 
-            : base(unitOfWorkManager,
-                  userRepository,
-                  roleRepository,
-                  userRoleRepository,
-                  userLoginRepository,
-                  userClaimRepository,
-                  userPermissionSettingRepository,
-                  userOrganizationUnitRepository,
-                  organizationUnitRoleRepository,
-                  userTokenRepository
-            )
+            IRepository<UserToken, long> userTokenRepository)
+            : base(
+                unitOfWorkManager,
+                userRepository,
+                roleRepository,
+                userRoleRepository,
+                userLoginRepository,
+                userClaimRepository,
+                userPermissionSettingRepository,
+                userOrganizationUnitRepository,
+                organizationUnitRoleRepository,
+                userTokenRepository)
         {
         }
     }

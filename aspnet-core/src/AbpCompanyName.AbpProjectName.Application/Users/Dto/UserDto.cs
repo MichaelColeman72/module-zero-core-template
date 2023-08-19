@@ -1,9 +1,9 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace AbpCompanyName.AbpProjectName.Users.Dto
 {
@@ -35,6 +35,7 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
 
         public DateTime CreationTime { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "By design")]
         public string[] RoleNames { get; set; }
     }
 }

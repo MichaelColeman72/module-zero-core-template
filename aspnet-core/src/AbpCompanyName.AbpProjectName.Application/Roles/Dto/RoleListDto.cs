@@ -1,6 +1,6 @@
-﻿using System;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Entities.Auditing;
+using System;
 
 namespace AbpCompanyName.AbpProjectName.Roles.Dto
 {

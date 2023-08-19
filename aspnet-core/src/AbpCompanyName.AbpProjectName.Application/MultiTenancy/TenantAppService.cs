@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
@@ -15,10 +13,13 @@ using AbpCompanyName.AbpProjectName.Authorization.Users;
 using AbpCompanyName.AbpProjectName.Editions;
 using AbpCompanyName.AbpProjectName.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AbpCompanyName.AbpProjectName.MultiTenancy
 {
-    [AbpAuthorize(PermissionNames.Pages_Tenants)]
+    [AbpAuthorize(PermissionNames.PagesTenants)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1501:Avoid excessive inheritance", Justification = "By design")]
     public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int, PagedTenantResultRequestDto, CreateTenantDto, TenantDto>, ITenantAppService
     {
         private readonly TenantManager _tenantManager;
@@ -53,14 +54,14 @@ namespace AbpCompanyName.AbpProjectName.MultiTenancy
                 ? null
                 : SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
 
-            var defaultEdition = await _editionManager.FindByNameAsync(EditionManager.DefaultEditionName);
+            var defaultEdition = await _editionManager.FindByNameAsync(EditionManager.DefaultEditionName).ConfigureAwait(false);
             if (defaultEdition != null)
             {
                 tenant.EditionId = defaultEdition.Id;
             }
 
-            await _tenantManager.CreateAsync(tenant);
-            await CurrentUnitOfWork.SaveChangesAsync(); // To get new tenant's id.
+            await _tenantManager.CreateAsync(tenant).ConfigureAwait(false);
+            await CurrentUnitOfWork.SaveChangesAsync().ConfigureAwait(false); // To get new tenant's id.
 
             // Create tenant database
             _abpZeroDbMigrator.CreateOrMigrateForTenant(tenant);
@@ -69,26 +70,34 @@ namespace AbpCompanyName.AbpProjectName.MultiTenancy
             using (CurrentUnitOfWork.SetTenantId(tenant.Id))
             {
                 // Create static roles for new tenant
-                CheckErrors(await _roleManager.CreateStaticRoles(tenant.Id));
+                CheckErrors(await _roleManager.CreateStaticRoles(tenant.Id).ConfigureAwait(false));
 
-                await CurrentUnitOfWork.SaveChangesAsync(); // To get static role ids
+                await CurrentUnitOfWork.SaveChangesAsync().ConfigureAwait(false); // To get static role ids
 
                 // Grant all permissions to admin role
                 var adminRole = _roleManager.Roles.Single(r => r.Name == StaticRoleNames.Tenants.Admin);
-                await _roleManager.GrantAllPermissionsAsync(adminRole);
+                await _roleManager.GrantAllPermissionsAsync(adminRole).ConfigureAwait(false);
 
                 // Create admin user for the tenant
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
-                await _userManager.InitializeOptionsAsync(tenant.Id);
-                CheckErrors(await _userManager.CreateAsync(adminUser, User.DefaultPassword));
-                await CurrentUnitOfWork.SaveChangesAsync(); // To get admin user's id
+                await _userManager.InitializeOptionsAsync(tenant.Id).ConfigureAwait(false);
+                CheckErrors(await _userManager.CreateAsync(adminUser, User.DefaultPassword).ConfigureAwait(false));
+                await CurrentUnitOfWork.SaveChangesAsync().ConfigureAwait(false); // To get admin user's id
 
                 // Assign admin user to role!
-                CheckErrors(await _userManager.AddToRoleAsync(adminUser, adminRole.Name));
-                await CurrentUnitOfWork.SaveChangesAsync();
+                CheckErrors(await _userManager.AddToRoleAsync(adminUser, adminRole.Name).ConfigureAwait(false));
+                await CurrentUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
             }
 
             return MapToEntityDto(tenant);
+        }
+
+        public override async Task DeleteAsync(EntityDto<int> input)
+        {
+            CheckDeletePermission();
+
+            var tenant = await _tenantManager.GetByIdAsync(input.Id).ConfigureAwait(false);
+            await _tenantManager.DeleteAsync(tenant).ConfigureAwait(false);
         }
 
         protected override IQueryable<Tenant> CreateFilteredQuery(PagedTenantResultRequestDto input)
@@ -106,18 +115,9 @@ namespace AbpCompanyName.AbpProjectName.MultiTenancy
             entity.IsActive = updateInput.IsActive;
         }
 
-        public override async Task DeleteAsync(EntityDto<int> input)
-        {
-            CheckDeletePermission();
-
-            var tenant = await _tenantManager.GetByIdAsync(input.Id);
-            await _tenantManager.DeleteAsync(tenant);
-        }
-
         private void CheckErrors(IdentityResult identityResult)
         {
             identityResult.CheckErrors(LocalizationManager);
         }
     }
 }
-

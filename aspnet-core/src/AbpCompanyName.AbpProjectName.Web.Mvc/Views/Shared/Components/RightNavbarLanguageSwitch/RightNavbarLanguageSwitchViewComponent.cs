@@ -1,7 +1,8 @@
-﻿using System.Linq;
-using Abp.Localization;
+﻿using Abp.Localization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
+#pragma warning disable CA1716
 namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.RightNavbarLanguageSwitch
 {
     public class RightNavbarLanguageSwitchViewComponent : AbpProjectNameViewComponent

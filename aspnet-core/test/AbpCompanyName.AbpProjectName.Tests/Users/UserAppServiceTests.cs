@@ -1,37 +1,36 @@
-﻿using System.Threading.Tasks;
+﻿using AbpCompanyName.AbpProjectName.Users;
+using AbpCompanyName.AbpProjectName.Users.Dto;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
+using System.Threading.Tasks;
 using Xunit;
-using Abp.Application.Services.Dto;
-using AbpCompanyName.AbpProjectName.Users;
-using AbpCompanyName.AbpProjectName.Users.Dto;
 
 namespace AbpCompanyName.AbpProjectName.Tests.Users
 {
-    public class UserAppService_Tests : AbpProjectNameTestBase
+    public class UserAppServiceTests : AbpProjectNameTestBase
     {
         private readonly IUserAppService _userAppService;
 
-        public UserAppService_Tests()
+        public UserAppServiceTests()
         {
             _userAppService = Resolve<IUserAppService>();
         }
 
         [Fact]
-        public async Task GetUsers_Test()
+        public async Task GetUsersTest()
         {
             // Act
-            var output = await _userAppService.GetAllAsync(new PagedUserResultRequestDto{MaxResultCount=20, SkipCount=0} );
+            var output = await _userAppService.GetAllAsync(new PagedUserResultRequestDto { MaxResultCount = 20, SkipCount = 0 }).ConfigureAwait(false);
 
             // Assert
             output.Items.Count.ShouldBeGreaterThan(0);
         }
 
         [Fact]
-        public async Task CreateUser_Test()
+        public async Task CreateUserTest()
         {
             // Act
-            await _userAppService.CreateAsync(
+            _ = await _userAppService.CreateAsync(
                 new CreateUserDto
                 {
                     EmailAddress = "john@volosoft.com",
@@ -40,13 +39,13 @@ namespace AbpCompanyName.AbpProjectName.Tests.Users
                     Surname = "Nash",
                     Password = "123qwe",
                     UserName = "john.nash"
-                });
+                }).ConfigureAwait(false);
 
             await UsingDbContextAsync(async context =>
             {
-                var johnNashUser = await context.Users.FirstOrDefaultAsync(u => u.UserName == "john.nash");
-                johnNashUser.ShouldNotBeNull();
-            });
+                var johnNashUser = await context.Users.FirstOrDefaultAsync(u => u.UserName == "john.nash").ConfigureAwait(false);
+                _ = johnNashUser.ShouldNotBeNull();
+            }).ConfigureAwait(false);
         }
     }
 }

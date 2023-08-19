@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
-using Abp.Application.Navigation;
+﻿using Abp.Application.Navigation;
 using Abp.Runtime.Session;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
+#pragma warning disable CA1716
 namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.SideBarMenu
 {
     public class SideBarMenuViewComponent : AbpProjectNameViewComponent
@@ -22,7 +23,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.SideBarMenu
         {
             var model = new SideBarMenuViewModel
             {
-                MainMenu = await _userNavigationManager.GetMenuAsync("MainMenu", _abpSession.ToUserIdentifier())
+                MainMenu = await _userNavigationManager.GetMenuAsync("MainMenu", _abpSession.ToUserIdentifier()).ConfigureAwait(false)
             };
 
             return View(model);

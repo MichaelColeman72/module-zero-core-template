@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using AbpCompanyName.AbpProjectName.Authorization.Accounts.Dto;
+using System.Threading.Tasks;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Accounts
 {

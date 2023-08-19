@@ -4,12 +4,6 @@ namespace AbpCompanyName.AbpProjectName.Tests
 {
     public sealed class MultiTenantFactAttribute : FactAttribute
     {
-        public MultiTenantFactAttribute()
-        {
-            if (!AbpProjectNameConsts.MultiTenancyEnabled)
-            {
-                Skip = "MultiTenancy is disabled.";
-            }
-        }
+        public MultiTenantFactAttribute() => Skip = AbpProjectNameConsts.MultiTenancyEnabled ? string.Empty : "MultiTenancy is disabled.";
     }
 }

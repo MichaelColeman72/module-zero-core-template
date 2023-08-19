@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Abp;
+﻿using Abp;
 using Abp.Authorization.Users;
 using Abp.Events.Bus;
 using Abp.Events.Bus.Entities;
@@ -14,6 +10,10 @@ using AbpCompanyName.AbpProjectName.EntityFrameworkCore;
 using AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Host;
 using AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Tenants;
 using AbpCompanyName.AbpProjectName.MultiTenancy;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AbpCompanyName.AbpProjectName.Tests
 {
@@ -21,7 +21,7 @@ namespace AbpCompanyName.AbpProjectName.Tests
     {
         protected AbpProjectNameTestBase()
         {
-            void NormalizeDbContext(AbpProjectNameDbContext context)
+            static void NormalizeDbContext(AbpProjectNameDbContext context)
             {
                 context.EntityChangeEventHelper = NullEntityChangeEventHelper.Instance;
                 context.EventBus = NullEventBus.Instance;
@@ -47,8 +47,6 @@ namespace AbpCompanyName.AbpProjectName.Tests
 
             LoginAsDefaultTenantAdmin();
         }
-
-        #region UsingDbContext
 
         protected IDisposable UsingTenantId(int? tenantId)
         {
@@ -81,11 +79,9 @@ namespace AbpCompanyName.AbpProjectName.Tests
         {
             using (UsingTenantId(tenantId))
             {
-                using (var context = LocalIocManager.Resolve<AbpProjectNameDbContext>())
-                {
-                    action(context);
-                    context.SaveChanges();
-                }
+                using var context = LocalIocManager.Resolve<AbpProjectNameDbContext>();
+                action(context);
+                _ = context.SaveChanges();
             }
         }
 
@@ -93,11 +89,9 @@ namespace AbpCompanyName.AbpProjectName.Tests
         {
             using (UsingTenantId(tenantId))
             {
-                using (var context = LocalIocManager.Resolve<AbpProjectNameDbContext>())
-                {
-                    await action(context);
-                    await context.SaveChangesAsync();
-                }
+                using var context = LocalIocManager.Resolve<AbpProjectNameDbContext>();
+                await action(context).ConfigureAwait(false);
+                _ = await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 
@@ -107,11 +101,9 @@ namespace AbpCompanyName.AbpProjectName.Tests
 
             using (UsingTenantId(tenantId))
             {
-                using (var context = LocalIocManager.Resolve<AbpProjectNameDbContext>())
-                {
-                    result = func(context);
-                    context.SaveChanges();
-                }
+                using var context = LocalIocManager.Resolve<AbpProjectNameDbContext>();
+                result = func(context);
+                _ = context.SaveChanges();
             }
 
             return result;
@@ -123,19 +115,13 @@ namespace AbpCompanyName.AbpProjectName.Tests
 
             using (UsingTenantId(tenantId))
             {
-                using (var context = LocalIocManager.Resolve<AbpProjectNameDbContext>())
-                {
-                    result = await func(context);
-                    await context.SaveChangesAsync();
-                }
+                using var context = LocalIocManager.Resolve<AbpProjectNameDbContext>();
+                result = await func(context).ConfigureAwait(false);
+                _ = await context.SaveChangesAsync().ConfigureAwait(false);
             }
 
             return result;
         }
-
-        #endregion
-
-        #region Login
 
         protected void LoginAsHostAdmin()
         {
@@ -185,26 +171,26 @@ namespace AbpCompanyName.AbpProjectName.Tests
             AbpSession.UserId = user.Id;
         }
 
-        #endregion
-
         /// <summary>
         /// Gets current user if <see cref="IAbpSession.UserId"/> is not null.
         /// Throws exception if it's null.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected async Task<User> GetCurrentUserAsync()
         {
             var userId = AbpSession.GetUserId();
-            return await UsingDbContext(context => context.Users.SingleAsync(u => u.Id == userId));
+            return await UsingDbContext(context => context.Users.SingleAsync(u => u.Id == userId)).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Gets current tenant if <see cref="IAbpSession.TenantId"/> is not null.
         /// Throws exception if there is no current tenant.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected async Task<Tenant> GetCurrentTenantAsync()
         {
             var tenantId = AbpSession.GetTenantId();
-            return await UsingDbContext(context => context.Tenants.SingleAsync(t => t.Id == tenantId));
+            return await UsingDbContext(context => context.Tenants.SingleAsync(t => t.Id == tenantId)).ConfigureAwait(false);
         }
     }
 }

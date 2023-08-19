@@ -1,11 +1,11 @@
-using Microsoft.Extensions.Configuration;
-using Castle.MicroKernel.Registration;
 using Abp.Events.Bus;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using AbpCompanyName.AbpProjectName.Configuration;
 using AbpCompanyName.AbpProjectName.EntityFrameworkCore;
 using AbpCompanyName.AbpProjectName.Migrator.DependencyInjection;
+using Castle.MicroKernel.Registration;
+using Microsoft.Extensions.Configuration;
 
 namespace AbpCompanyName.AbpProjectName.Migrator
 {
@@ -19,23 +19,19 @@ namespace AbpCompanyName.AbpProjectName.Migrator
             abpProjectNameEntityFrameworkModule.SkipDbSeed = true;
 
             _appConfiguration = AppConfigurations.Get(
-                typeof(AbpProjectNameMigratorModule).GetAssembly().GetDirectoryPathOrNull()
-            );
+                typeof(AbpProjectNameMigratorModule).GetAssembly().GetDirectoryPathOrNull());
         }
 
         public override void PreInitialize()
         {
             Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
-                AbpProjectNameConsts.ConnectionStringName
-            );
+                AbpProjectNameConsts.ConnectionStringName);
 
             Configuration.BackgroundJobs.IsJobExecutionEnabled = false;
             Configuration.ReplaceService(
-                typeof(IEventBus), 
+                typeof(IEventBus),
                 () => IocManager.IocContainer.Register(
-                    Component.For<IEventBus>().Instance(NullEventBus.Instance)
-                )
-            );
+                    Component.For<IEventBus>().Instance(NullEventBus.Instance)));
         }
 
         public override void Initialize()

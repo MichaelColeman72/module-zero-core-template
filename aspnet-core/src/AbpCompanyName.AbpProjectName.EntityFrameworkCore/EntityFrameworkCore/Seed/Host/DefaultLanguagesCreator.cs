@@ -1,16 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Abp.Localization;
+﻿using Abp.Localization;
 using Abp.MultiTenancy;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Host
 {
     public class DefaultLanguagesCreator
     {
+        private readonly AbpProjectNameDbContext _context;
+
+        public DefaultLanguagesCreator(AbpProjectNameDbContext context)
+        {
+            _context = context;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1002:Do not expose generic lists", Justification = "By design")]
         public static List<ApplicationLanguage> InitialLanguages => GetInitialLanguages();
 
-        private readonly AbpProjectNameDbContext _context;
+        public void Create()
+        {
+            CreateLanguages();
+        }
 
         private static List<ApplicationLanguage> GetInitialLanguages()
         {
@@ -33,16 +44,6 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Host
             };
         }
 
-        public DefaultLanguagesCreator(AbpProjectNameDbContext context)
-        {
-            _context = context;
-        }
-
-        public void Create()
-        {
-            CreateLanguages();
-        }
-
         private void CreateLanguages()
         {
             foreach (var language in InitialLanguages)
@@ -58,8 +59,8 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed.Host
                 return;
             }
 
-            _context.Languages.Add(language);
-            _context.SaveChanges();
+            _ = _context.Languages.Add(language);
+            _ = _context.SaveChanges();
         }
     }
 }

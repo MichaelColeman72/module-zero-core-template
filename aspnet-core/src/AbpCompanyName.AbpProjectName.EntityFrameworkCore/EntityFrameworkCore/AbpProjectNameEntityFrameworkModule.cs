@@ -7,7 +7,7 @@ using AbpCompanyName.AbpProjectName.EntityFrameworkCore.Seed;
 namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore
 {
     [DependsOn(
-        typeof(AbpProjectNameCoreModule), 
+        typeof(AbpProjectNameCoreModule),
         typeof(AbpZeroCoreEntityFrameworkCoreModule))]
     public class AbpProjectNameEntityFrameworkModule : AbpModule
     {

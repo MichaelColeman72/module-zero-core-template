@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
@@ -14,10 +11,15 @@ using AbpCompanyName.AbpProjectName.Authorization.Users;
 using AbpCompanyName.AbpProjectName.Roles.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AbpCompanyName.AbpProjectName.Roles
 {
-    [AbpAuthorize(PermissionNames.Pages_Roles)]
+    [AbpAuthorize(PermissionNames.PagesRoles)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1501:Avoid excessive inheritance", Justification = "By design")]
     public class RoleAppService : AsyncCrudAppService<Role, RoleDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>, IRoleAppService
     {
         private readonly RoleManager _roleManager;
@@ -37,14 +39,14 @@ namespace AbpCompanyName.AbpProjectName.Roles
             var role = ObjectMapper.Map<Role>(input);
             role.SetNormalizedName();
 
-            CheckErrors(await _roleManager.CreateAsync(role));
+            CheckErrors(await _roleManager.CreateAsync(role).ConfigureAwait(false));
 
             var grantedPermissions = PermissionManager
                 .GetAllPermissions()
                 .Where(p => input.GrantedPermissions.Contains(p.Name))
                 .ToList();
 
-            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
+            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions).ConfigureAwait(false);
 
             return MapToEntityDto(role);
         }
@@ -55,9 +57,8 @@ namespace AbpCompanyName.AbpProjectName.Roles
                 .Roles
                 .WhereIf(
                     !input.Permission.IsNullOrWhiteSpace(),
-                    r => r.Permissions.Any(rp => rp.Name == input.Permission && rp.IsGranted)
-                )
-                .ToListAsync();
+                    r => r.Permissions.Any(rp => rp.Name == input.Permission && rp.IsGranted))
+                .ToListAsync().ConfigureAwait(false);
 
             return new ListResultDto<RoleListDto>(ObjectMapper.Map<List<RoleListDto>>(roles));
         }
@@ -66,18 +67,18 @@ namespace AbpCompanyName.AbpProjectName.Roles
         {
             CheckUpdatePermission();
 
-            var role = await _roleManager.GetRoleByIdAsync(input.Id);
+            var role = await _roleManager.GetRoleByIdAsync(input.Id).ConfigureAwait(false);
 
-            ObjectMapper.Map(input, role);
+            _ = ObjectMapper.Map(input, role);
 
-            CheckErrors(await _roleManager.UpdateAsync(role));
+            CheckErrors(await _roleManager.UpdateAsync(role).ConfigureAwait(false));
 
             var grantedPermissions = PermissionManager
                 .GetAllPermissions()
                 .Where(p => input.GrantedPermissions.Contains(p.Name))
                 .ToList();
 
-            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
+            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions).ConfigureAwait(false);
 
             return MapToEntityDto(role);
         }
@@ -86,15 +87,15 @@ namespace AbpCompanyName.AbpProjectName.Roles
         {
             CheckDeletePermission();
 
-            var role = await _roleManager.FindByIdAsync(input.Id.ToString());
-            var users = await _userManager.GetUsersInRoleAsync(role.NormalizedName);
+            var role = await _roleManager.FindByIdAsync(input.Id.ToString(CultureInfo.InvariantCulture)).ConfigureAwait(false);
+            var users = await _userManager.GetUsersInRoleAsync(role.NormalizedName).ConfigureAwait(false);
 
             foreach (var user in users)
             {
-                CheckErrors(await _userManager.RemoveFromRoleAsync(user, role.NormalizedName));
+                CheckErrors(await _userManager.RemoveFromRoleAsync(user, role.NormalizedName).ConfigureAwait(false));
             }
 
-            CheckErrors(await _roleManager.DeleteAsync(role));
+            CheckErrors(await _roleManager.DeleteAsync(role).ConfigureAwait(false));
         }
 
         public Task<ListResultDto<PermissionDto>> GetAllPermissions()
@@ -102,8 +103,22 @@ namespace AbpCompanyName.AbpProjectName.Roles
             var permissions = PermissionManager.GetAllPermissions();
 
             return Task.FromResult(new ListResultDto<PermissionDto>(
-                ObjectMapper.Map<List<PermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList()
-            ));
+                ObjectMapper.Map<List<PermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList()));
+        }
+
+        public async Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input)
+        {
+            var permissions = PermissionManager.GetAllPermissions();
+            var role = await _roleManager.GetRoleByIdAsync(input.Id).ConfigureAwait(false);
+            var grantedPermissions = (await _roleManager.GetGrantedPermissionsAsync(role).ConfigureAwait(false)).ToArray();
+            var roleEditDto = ObjectMapper.Map<RoleEditDto>(role);
+
+            return new GetRoleForEditOutput
+            {
+                Role = roleEditDto,
+                Permissions = ObjectMapper.Map<List<FlatPermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList(),
+                GrantedPermissionNames = grantedPermissions.Select(p => p.Name).ToList()
+            };
         }
 
         protected override IQueryable<Role> CreateFilteredQuery(PagedRoleResultRequestDto input)
@@ -116,7 +131,7 @@ namespace AbpCompanyName.AbpProjectName.Roles
 
         protected override async Task<Role> GetEntityByIdAsync(int id)
         {
-            return await Repository.GetAllIncluding(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
+            return await Repository.GetAllIncluding(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
         }
 
         protected override IQueryable<Role> ApplySorting(IQueryable<Role> query, PagedRoleResultRequestDto input)
@@ -128,21 +143,5 @@ namespace AbpCompanyName.AbpProjectName.Roles
         {
             identityResult.CheckErrors(LocalizationManager);
         }
-
-        public async Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input)
-        {
-            var permissions = PermissionManager.GetAllPermissions();
-            var role = await _roleManager.GetRoleByIdAsync(input.Id);
-            var grantedPermissions = (await _roleManager.GetGrantedPermissionsAsync(role)).ToArray();
-            var roleEditDto = ObjectMapper.Map<RoleEditDto>(role);
-
-            return new GetRoleForEditOutput
-            {
-                Role = roleEditDto,
-                Permissions = ObjectMapper.Map<List<FlatPermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList(),
-                GrantedPermissionNames = grantedPermissions.Select(p => p.Name).ToList()
-            };
-        }
     }
 }
-

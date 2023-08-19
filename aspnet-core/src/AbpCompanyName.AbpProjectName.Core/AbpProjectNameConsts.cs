@@ -2,7 +2,7 @@
 
 namespace AbpCompanyName.AbpProjectName
 {
-    public class AbpProjectNameConsts
+    public static class AbpProjectNameConsts
     {
         public const string LocalizationSourceName = "AbpProjectName";
 
@@ -10,9 +10,8 @@ namespace AbpCompanyName.AbpProjectName
 
         public const bool MultiTenancyEnabled = true;
 
-
         /// <summary>
-        /// Default pass phrase for SimpleStringCipher decrypt/encrypt operations
+        /// Default pass phrase for SimpleStringCipher decrypt/encrypt operations.
         /// </summary>
         public static readonly string DefaultPassPhrase =
             DebugHelper.IsDebug ? "gsKxGZ012HLL3MI5" : "{{DEFAULT_PASS_PHRASE_HERE}}";

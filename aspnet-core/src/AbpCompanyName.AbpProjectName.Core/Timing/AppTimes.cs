@@ -1,12 +1,12 @@
-﻿using System;
-using Abp.Dependency;
+﻿using Abp.Dependency;
+using System;
 
 namespace AbpCompanyName.AbpProjectName.Timing
 {
     public class AppTimes : ISingletonDependency
     {
         /// <summary>
-        /// Gets the startup time of the application.
+        /// Gets or sets the startup time of the application.
         /// </summary>
         public DateTime StartupTime { get; set; }
     }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Abp.Reflection.Extensions;
+using System;
 using System.IO;
 using System.Linq;
-using Abp.Reflection.Extensions;
 
 namespace AbpCompanyName.AbpProjectName.Web
 {
@@ -37,17 +37,12 @@ namespace AbpCompanyName.AbpProjectName.Web
             }
 
             var webHostFolder = Path.Combine(directoryInfo.FullName, "src", "AbpCompanyName.AbpProjectName.Web.Host");
-            if (Directory.Exists(webHostFolder))
-            {
-                return webHostFolder;
-            }
-
-            throw new Exception("Could not find root folder of the web project!");
+            return Directory.Exists(webHostFolder) ? webHostFolder : throw new Exception("Could not find root folder of the web project!");
         }
 
         private static bool DirectoryContains(string directory, string fileName)
         {
-            return Directory.GetFiles(directory).Any(filePath => string.Equals(Path.GetFileName(filePath), fileName));
+            return Directory.GetFiles(directory).Any(filePath => string.Equals(Path.GetFileName(filePath), fileName, StringComparison.Ordinal));
         }
     }
 }

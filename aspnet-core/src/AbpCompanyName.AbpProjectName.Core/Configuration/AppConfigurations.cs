@@ -1,17 +1,16 @@
-﻿using System.Collections.Concurrent;
-using Microsoft.Extensions.Configuration;
-using Abp.Extensions;
+﻿using Abp.Extensions;
 using Abp.Reflection.Extensions;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
 namespace AbpCompanyName.AbpProjectName.Configuration
 {
     public static class AppConfigurations
     {
-        private static readonly ConcurrentDictionary<string, IConfigurationRoot> _configurationCache;
+        private static readonly ConcurrentDictionary<string, IConfigurationRoot> _configurationCache = new ConcurrentDictionary<string, IConfigurationRoot>();
 
         static AppConfigurations()
         {
-            _configurationCache = new ConcurrentDictionary<string, IConfigurationRoot>();
         }
 
         public static IConfigurationRoot Get(string path, string environmentName = null, bool addUserSecrets = false)
@@ -19,8 +18,7 @@ namespace AbpCompanyName.AbpProjectName.Configuration
             var cacheKey = path + "#" + environmentName + "#" + addUserSecrets;
             return _configurationCache.GetOrAdd(
                 cacheKey,
-                _ => BuildConfiguration(path, environmentName, addUserSecrets)
-            );
+                _ => BuildConfiguration(path, environmentName, addUserSecrets));
         }
 
         private static IConfigurationRoot BuildConfiguration(string path, string environmentName = null, bool addUserSecrets = false)
@@ -38,7 +36,7 @@ namespace AbpCompanyName.AbpProjectName.Configuration
 
             if (addUserSecrets)
             {
-                builder.AddUserSecrets(typeof(AppConfigurations).GetAssembly(), optional: true);
+                _ = builder.AddUserSecrets(typeof(AppConfigurations).GetAssembly(), optional: true);
             }
 
             return builder.Build();

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace AbpCompanyName.AbpProjectName.Web.Startup
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -16,7 +16,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Startup
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    _ = webBuilder.UseStartup<Startup>();
                 })
                 .UseCastleWindsor(IocManager.Instance.IocContainer);
     }

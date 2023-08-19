@@ -7,4 +7,3 @@ namespace AbpCompanyName.AbpProjectName.Roles.Dto
         public string Keyword { get; set; }
     }
 }
-

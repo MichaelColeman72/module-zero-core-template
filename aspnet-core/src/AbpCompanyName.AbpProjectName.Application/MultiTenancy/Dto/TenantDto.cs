@@ -1,7 +1,7 @@
-using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using Abp.MultiTenancy;
+using System.ComponentModel.DataAnnotations;
 
 namespace AbpCompanyName.AbpProjectName.MultiTenancy.Dto
 {
@@ -15,8 +15,8 @@ namespace AbpCompanyName.AbpProjectName.MultiTenancy.Dto
 
         [Required]
         [StringLength(AbpTenantBase.MaxNameLength)]
-        public string Name { get; set; }        
-        
-        public bool IsActive {get; set;}
+        public string Name { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

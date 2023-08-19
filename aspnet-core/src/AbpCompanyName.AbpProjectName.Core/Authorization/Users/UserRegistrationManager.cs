@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Domain.Services;
 using Abp.IdentityFramework;
 using Abp.Runtime.Session;
 using Abp.UI;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.MultiTenancy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
 {
     public class UserRegistrationManager : DomainService
     {
-        public IAbpSession AbpSession { get; set; }
-
         private readonly TenantManager _tenantManager;
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -37,11 +35,13 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             AbpSession = NullAbpSession.Instance;
         }
 
+        public IAbpSession AbpSession { get; set; }
+
         public async Task<User> RegisterAsync(string name, string surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed)
         {
             CheckForTenant();
 
-            var tenant = await GetActiveTenantAsync();
+            var tenant = await GetActiveTenantAsync().ConfigureAwait(false);
 
             var user = new User
             {
@@ -56,18 +56,23 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             };
 
             user.SetNormalizedNames();
-           
-            foreach (var defaultRole in await _roleManager.Roles.Where(r => r.IsDefault).ToListAsync())
+
+            foreach (var defaultRole in await _roleManager.Roles.Where(r => r.IsDefault).ToListAsync().ConfigureAwait(false))
             {
                 user.Roles.Add(new UserRole(tenant.Id, user.Id, defaultRole.Id));
             }
 
-            await _userManager.InitializeOptionsAsync(tenant.Id);
+            await _userManager.InitializeOptionsAsync(tenant.Id).ConfigureAwait(false);
 
-            CheckErrors(await _userManager.CreateAsync(user, plainPassword));
-            await CurrentUnitOfWork.SaveChangesAsync();
+            CheckErrors(await _userManager.CreateAsync(user, plainPassword).ConfigureAwait(false));
+            await CurrentUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
             return user;
+        }
+
+        protected virtual void CheckErrors(IdentityResult identityResult)
+        {
+            identityResult.CheckErrors(LocalizationManager);
         }
 
         private void CheckForTenant()
@@ -80,33 +85,15 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
         private async Task<Tenant> GetActiveTenantAsync()
         {
-            if (!AbpSession.TenantId.HasValue)
-            {
-                return null;
-            }
-
-            return await GetActiveTenantAsync(AbpSession.TenantId.Value);
+            return !AbpSession.TenantId.HasValue ? null : await GetActiveTenantAsync(AbpSession.TenantId.Value).ConfigureAwait(false);
         }
 
         private async Task<Tenant> GetActiveTenantAsync(int tenantId)
         {
-            var tenant = await _tenantManager.FindByIdAsync(tenantId);
-            if (tenant == null)
-            {
-                throw new UserFriendlyException(L("UnknownTenantId{0}", tenantId));
-            }
-
-            if (!tenant.IsActive)
-            {
-                throw new UserFriendlyException(L("TenantIdIsNotActive{0}", tenantId));
-            }
-
-            return tenant;
-        }
-
-        protected virtual void CheckErrors(IdentityResult identityResult)
-        {
-            identityResult.CheckErrors(LocalizationManager);
+            var tenant = await _tenantManager.FindByIdAsync(tenantId).ConfigureAwait(false);
+            return tenant == null
+                ? throw new UserFriendlyException(L("UnknownTenantId{0}", tenantId))
+                : !tenant.IsActive ? throw new UserFriendlyException(L("TenantIdIsNotActive{0}", tenantId)) : tenant;
         }
     }
 }

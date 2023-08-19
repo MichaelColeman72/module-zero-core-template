@@ -1,5 +1,4 @@
-﻿using System;
-using Abp.AspNetCore;
+﻿using Abp.AspNetCore;
 using Abp.AspNetCore.TestBase;
 using Abp.Dependency;
 using AbpCompanyName.AbpProjectName.Authentication.JwtBearer;
@@ -15,9 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace AbpCompanyName.AbpProjectName.Web.Tests
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1724: Type names should not match namespaces", Justification = "By design")]
     public class Startup
     {
         private readonly IConfigurationRoot _appConfiguration;
@@ -27,60 +28,60 @@ namespace AbpCompanyName.AbpProjectName.Web.Tests
             _appConfiguration = env.GetAppConfiguration();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "By design")]
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        {
+            UseInMemoryDb(app.ApplicationServices);
+
+            app.UseAbp(); // Initializes ABP framework.
+
+            _ = app.UseExceptionHandler("/Error");
+
+            _ = app.UseStaticFiles();
+            _ = app.UseRouting();
+
+            _ = app.UseAuthentication();
+
+            _ = app.UseJwtTokenMiddleware();
+
+            _ = app.UseAuthorization();
+
+            _ = app.UseEndpoints(endpoints =>
+            {
+                _ = endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
+
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddEntityFrameworkInMemoryDatabase();
+            _ = services.AddEntityFrameworkInMemoryDatabase();
 
-            services.AddMvc();
-            
-            IdentityRegistrar.Register(services);
+            _ = services.AddMvc();
+
+            _ = IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
-            
-            services.AddScoped<IWebResourceManager, WebResourceManager>();
 
-            //Configure Abp and Dependency Injection
+            _ = services.AddScoped<IWebResourceManager, WebResourceManager>();
+
+            // Configure Abp and Dependency Injection
             return services.AddAbp<AbpProjectNameWebTestModule>(options =>
             {
                 options.SetupTest();
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
-        {
-            UseInMemoryDb(app.ApplicationServices);
-
-            app.UseAbp(); //Initializes ABP framework.
-
-            app.UseExceptionHandler("/Error");
-
-            app.UseStaticFiles();
-            app.UseRouting();
-
-            app.UseAuthentication();
-
-            app.UseJwtTokenMiddleware();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            });
-        }
-
-        private void UseInMemoryDb(IServiceProvider serviceProvider)
+        private static void UseInMemoryDb(IServiceProvider serviceProvider)
         {
             var builder = new DbContextOptionsBuilder<AbpProjectNameDbContext>();
-            builder.UseInMemoryDatabase(Guid.NewGuid().ToString()).UseInternalServiceProvider(serviceProvider);
+            _ = builder.UseInMemoryDatabase(Guid.NewGuid().ToString()).UseInternalServiceProvider(serviceProvider);
             var options = builder.Options;
 
             var iocManager = serviceProvider.GetRequiredService<IIocManager>();
-            iocManager.IocContainer
+            _ = iocManager.IocContainer
                 .Register(
                     Component.For<DbContextOptions<AbpProjectNameDbContext>>()
                         .Instance(options)
-                        .LifestyleSingleton()
-                );
+                        .LifestyleSingleton());
         }
     }
 }

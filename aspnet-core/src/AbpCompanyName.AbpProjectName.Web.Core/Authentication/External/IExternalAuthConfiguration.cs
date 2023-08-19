@@ -4,6 +4,6 @@ namespace AbpCompanyName.AbpProjectName.Authentication.External
 {
     public interface IExternalAuthConfiguration
     {
-        List<ExternalLoginProviderInfo> Providers { get; }
+        IReadOnlyList<ExternalLoginProviderInfo> Providers { get; }
     }
 }

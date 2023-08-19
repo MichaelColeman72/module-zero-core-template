@@ -1,5 +1,6 @@
 ﻿using AbpCompanyName.AbpProjectName.Sessions.Dto;
 
+#pragma warning disable CA1716
 namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.SideBarUserArea
 {
     public class SideBarUserAreaViewModel
@@ -8,18 +9,18 @@ namespace AbpCompanyName.AbpProjectName.Web.Views.Shared.Components.SideBarUserA
 
         public bool IsMultiTenancyEnabled { get; set; }
 
-        public string GetShownLoginName()
+        public string ShownLoginName
         {
-            var userName = LoginInformations.User.UserName;
-
-            if (!IsMultiTenancyEnabled)
+            get
             {
-                return userName;
-            }
+                var userName = LoginInformations.User.UserName;
 
-            return LoginInformations.Tenant == null
-                ? ".\\" + userName
-                : LoginInformations.Tenant.TenancyName + "\\" + userName;
+                return !IsMultiTenancyEnabled
+                    ? userName
+                    : LoginInformations.Tenant == null
+                    ? ".\\" + userName
+                    : LoginInformations.Tenant.TenancyName + "\\" + userName;
+            }
         }
     }
 }
